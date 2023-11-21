@@ -32,7 +32,6 @@ public static class Extensions
             Guid = user.Guid,
             Username = user.Username,
             Email = user.Email,
-            Password = user.Password,
             CreatedAt = user.CreatedAt,
             LastLogin = user.LastLogin,
         };

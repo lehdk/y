@@ -28,7 +28,10 @@ public class UserProfileRepository : IUserProfileRepository
             Username = username,
             Email = email,
             Password = password,
+            ProfileId = profile.Guid,
         });
+
+        await _context.SaveChangesAsync();
 
         return user.Entity.Parse(profile);
     }

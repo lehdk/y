@@ -19,7 +19,7 @@ public class UserProfileService: IUserProfileService
     public Task<YUser> CreateAsync(string username, string email, string password)
     {
         _logger.LogInformation($"Creating user with username {username} and email {email}");
-        if(username.Length <= 5 || username.Length > 100)
+        if(username.Length < 3 || username.Length > 100)
         {
             throw new ArgumentException("The length of the username must be maximum 100 and minimum 5");
         }
@@ -27,6 +27,8 @@ public class UserProfileService: IUserProfileService
         // TODO: Make regex for password
 
         // TODO: Make email validation
+
+        // TODO: The password need to be secured
 
         return _userProfileRepository.CreateUser(username, email, password);
     }

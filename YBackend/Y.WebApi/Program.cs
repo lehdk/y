@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Y.Infrastructure;
 using Y.Infrastructure.Extensions;
+using Y.Application.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddYInfrastructure();
+builder.Services.AddYApplication();
 
 var app = builder.Build();
 

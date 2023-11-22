@@ -35,7 +35,7 @@ public class UserProfileRepository : IUserProfileRepository
         return user.Parse(dbProfile.Parse());
     }
 
-    public async Task<YUser> CreateUser(string username, string email, string password)
+    public async Task<YUser> CreateUser(string username, string email, string hash, string salt)
     {
         _logger.LogInformation("Creating user with username: {username} and email: {email}", username, email);
 
@@ -45,11 +45,16 @@ public class UserProfileRepository : IUserProfileRepository
         {
             Username = username,
             Email = email,
-            Password = password,
+            Password = hash,
             ProfileId = profile.Guid,
             CreatedAt = DateTime.UtcNow,
         });
 
+        await _context.PasswordSalts.AddAsync(new PasswordSalts()
+        {
+            UserId = user.Entity.Guid,
+            Salt = salt,
+        });
         await _context.SaveChangesAsync();
 
         return user.Entity.Parse(profile);

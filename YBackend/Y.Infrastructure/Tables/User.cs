@@ -23,4 +23,6 @@ public class User
     public DateTime? LastLogin { get; set; }
 
     public Guid ProfileId { get; set; }
+    
+    public PasswordSalts PasswordSalt { get; set; }
 }

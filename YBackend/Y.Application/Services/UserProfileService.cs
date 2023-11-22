@@ -1,5 +1,4 @@
-﻿using System.Net.Mail;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using Y.Application.Services.Interfaces;
 using Y.Domain.Exceptions;
@@ -12,11 +11,13 @@ public class UserProfileService : IUserProfileService
 {
     private readonly ILogger<UserProfileService> _logger;
     private readonly IUserProfileRepository _userProfileRepository;
+    private readonly IArgon2idPasswordHashAlgorithm _hashing;
 
-    public UserProfileService(ILogger<UserProfileService> logger, IUserProfileRepository userProfileRepository)
+    public UserProfileService(ILogger<UserProfileService> logger, IUserProfileRepository userProfileRepository, IArgon2idPasswordHashAlgorithm hashing)
     {
         _logger = logger;
         _userProfileRepository = userProfileRepository;
+        _hashing = hashing;
     }
 
     public Task<YUser?> GetUser(Guid userId)
@@ -50,8 +51,9 @@ public class UserProfileService : IUserProfileService
             throw new ValidationException($"The email address {email} is not valid");
         }
 
-        // TODO: The password need to be secured
+        var salt = _hashing.GenerateSalt();
+        var hash = _hashing.HashPassword(password, salt);
 
-        return await _userProfileRepository.CreateUser(username, email, password);
+        return await _userProfileRepository.CreateUser(username, email, hash, salt);
     }
 }

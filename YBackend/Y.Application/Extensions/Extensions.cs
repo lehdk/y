@@ -8,6 +8,8 @@ public static class Extensions
 {
     public static IServiceCollection AddYApplication(this IServiceCollection services)
     {
+        services.AddTransient<IArgon2idPasswordHashAlgorithm, Argon2idPasswordHashAlgorithm>();
+        
         services.AddTransient<IUserProfileService, UserProfileService>();
 
         return services;

@@ -19,6 +19,13 @@ public class UserProfileService : IUserProfileService
         _userProfileRepository = userProfileRepository;
     }
 
+    public Task<YUser?> GetUser(Guid userId)
+    {
+        _logger.LogInformation($"Getting user {userId}");
+
+        return _userProfileRepository.GetUser(userId);
+    }
+
     public async Task<YUser> CreateAsync(string username, string email, string password)
     {
         _logger.LogInformation($"Creating user with username {username} and email {email}");

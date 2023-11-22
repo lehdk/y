@@ -17,9 +17,27 @@ public class UserProfileRepository : IUserProfileRepository
         _context = context;
     }
 
+    public async Task<YUser?> GetUser(Guid userId)
+    {
+        var user = await _context.Users.FindAsync(userId);
+
+        if (user is null)
+            return null;
+
+        var dbProfile = await _context.Profiles.FindAsync(user.ProfileId);
+
+        if(dbProfile is null)
+        {
+            _logger.LogError("Could not find profile for user {userId}", userId);
+            return null;
+        }
+
+        return user.Parse(dbProfile.Parse());
+    }
+
     public async Task<YUser> CreateUser(string username, string email, string password)
     {
-        _logger.LogInformation($"Creating user with username: {username} and email: {email}");
+        _logger.LogInformation("Creating user with username: {username} and email: {email}", username, email);
 
         var profile = await CreateEmptyProfile();
 
@@ -29,6 +47,7 @@ public class UserProfileRepository : IUserProfileRepository
             Email = email,
             Password = password,
             ProfileId = profile.Guid,
+            CreatedAt = DateTime.UtcNow,
         });
 
         await _context.SaveChangesAsync();

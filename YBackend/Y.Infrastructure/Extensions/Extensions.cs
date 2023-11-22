@@ -36,4 +36,9 @@ public static class Extensions
             LastLogin = user.LastLogin,
         };
     }
+
+    public static YUser Parse(this User user, Profile profile)
+    {
+        return user.Parse(profile.Parse());
+    }
 }

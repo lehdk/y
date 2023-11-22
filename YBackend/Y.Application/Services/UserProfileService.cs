@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
+using Microsoft.Extensions.Logging;
 using Y.Application.Services.Interfaces;
 using Y.Domain.Models;
 using Y.Infrastructure.Repositories.Interfaces;
@@ -24,7 +26,11 @@ public class UserProfileService: IUserProfileService
             throw new ArgumentException("The length of the username must be maximum 100 and minimum 5");
         }
 
-        // TODO: Make regex for password
+        Regex validateGuidRegex = new Regex("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$");
+        if(!validateGuidRegex.IsMatch(password))
+        {
+            throw new ValidationException("The password must be 8 characters long and contain a lowercase, uppercase, digit and a special character");
+        }
 
         // TODO: Make email validation
 

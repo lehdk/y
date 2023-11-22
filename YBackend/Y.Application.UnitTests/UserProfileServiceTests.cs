@@ -3,6 +3,7 @@ using Moq;
 using Y.Application.Services;
 using Y.Application.Services.Interfaces;
 using Y.Domain.Exceptions;
+using Y.Domain.Models;
 using Y.Infrastructure.Repositories.Interfaces;
 
 namespace Y.Application.UnitTests;
@@ -48,5 +49,32 @@ public class UserProfileServiceTests
         // Act Assert
 
         await Assert.ThrowsAsync<ValidationException>(() => sut.CreateAsync(VALID_USERNAME, email, VALID_PASSWORD));
+    }
+
+    [Fact]
+    public async void CreateAsync_ValidData_ReturnsUser()
+    {
+        // Arrange
+
+        var sut = GetService();
+
+        var profile = new YProfile();
+
+        var user = new YUser(profile)
+        {
+            Guid = Guid.NewGuid(),
+            Username = VALID_USERNAME,
+            Email = VALID_EMAIL,
+        };
+
+        _userProfileRepositoryMock.Setup(x => x.CreateUser(VALID_USERNAME, VALID_EMAIL, VALID_PASSWORD)).ReturnsAsync(user);
+
+        // Act
+
+        var result = await sut.CreateAsync(VALID_USERNAME, VALID_EMAIL, VALID_PASSWORD);
+
+        // Assert
+
+        Assert.Equal(user, result);
     }
 }

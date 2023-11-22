@@ -1,13 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Net.Mail;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using Y.Application.Services.Interfaces;
+using Y.Domain.Exceptions;
 using Y.Domain.Models;
 using Y.Infrastructure.Repositories.Interfaces;
 
 namespace Y.Application.Services;
 
-public class UserProfileService: IUserProfileService
+public class UserProfileService : IUserProfileService
 {
     private readonly ILogger<UserProfileService> _logger;
     private readonly IUserProfileRepository _userProfileRepository;
@@ -18,24 +19,32 @@ public class UserProfileService: IUserProfileService
         _userProfileRepository = userProfileRepository;
     }
 
-    public Task<YUser> CreateAsync(string username, string email, string password)
+    public async Task<YUser> CreateAsync(string username, string email, string password)
     {
         _logger.LogInformation($"Creating user with username {username} and email {email}");
-        if(username.Length < 3 || username.Length > 100)
+        if (username.Length < 3 || username.Length > 100)
         {
-            throw new ArgumentException("The length of the username must be maximum 100 and minimum 5");
+            throw new ValidationException("The length of the username must be maximum 100 and minimum 5");
         }
 
+        // Validate password
         Regex validateGuidRegex = new Regex("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$");
-        if(!validateGuidRegex.IsMatch(password))
+        if (!validateGuidRegex.IsMatch(password))
         {
             throw new ValidationException("The password must be 8 characters long and contain a lowercase, uppercase, digit and a special character");
         }
 
-        // TODO: Make email validation
+        // Validate email
+        
+        email = email.Trim().ToLower();
+        var emailValidationRegex = new Regex(@"^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$");
+        if(!emailValidationRegex.IsMatch(email))
+        {
+            throw new ValidationException($"The email address {email} is not valid");
+        }
 
         // TODO: The password need to be secured
 
-        return _userProfileRepository.CreateUser(username, email, password);
+        return await _userProfileRepository.CreateUser(username, email, password);
     }
 }

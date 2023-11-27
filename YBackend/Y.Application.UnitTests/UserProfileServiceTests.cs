@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Y.Application.Services;
@@ -16,8 +17,9 @@ public class UserProfileServiceTests
 
     private readonly Mock<ILogger<UserProfileService>> _loggerMock = new();
     private readonly Mock<IUserProfileRepository> _userProfileRepositoryMock = new();
+    private readonly Mock<IArgon2idPasswordHashAlgorithm> _passwordHasherMock = new();
 
-    private IUserProfileService GetService() => new UserProfileService(_loggerMock.Object, _userProfileRepositoryMock.Object);
+    private IUserProfileService GetService() => new UserProfileService(_loggerMock.Object, _userProfileRepositoryMock.Object, _passwordHasherMock.Object);
 
     [Theory]
     [InlineData("u")]
@@ -67,7 +69,7 @@ public class UserProfileServiceTests
             Email = VALID_EMAIL,
         };
 
-        _userProfileRepositoryMock.Setup(x => x.CreateUser(VALID_USERNAME, VALID_EMAIL, VALID_PASSWORD)).ReturnsAsync(user);
+        _userProfileRepositoryMock.Setup(x => x.CreateUser(VALID_USERNAME, VALID_EMAIL, It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(user);
 
         // Act
 

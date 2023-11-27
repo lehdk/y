@@ -3,6 +3,7 @@ using Y.Domain.Models;
 using Y.Infrastructure.Extensions;
 using Y.Infrastructure.Repositories.Interfaces;
 using Y.Infrastructure.Tables;
+using Y.Domain.Exceptions;
 
 namespace Y.Infrastructure.Repositories;
 
@@ -68,5 +69,26 @@ public class UserProfileRepository : IUserProfileRepository
         await _context.SaveChangesAsync();
 
         return profile.Entity.Parse();
+    }
+
+    public async Task<(string Hash, string Salt)> GetHashAndSalt(Guid userGuid)
+    {
+        _logger.LogInformation("Getting hash and salt for user {userGuid}", userGuid);
+
+        var user = await _context.Users.FindAsync(userGuid);
+
+        if (user is null)
+            throw new UserNotFoundException();
+
+        var salt = await _context.PasswordSalts.FindAsync(userGuid);
+
+        if (salt is null)
+        {
+            var error = new Exception($"Could not find password salt for user ${userGuid}");
+            _logger.LogError(error, "Could not find password salt for user {userGuid}", userGuid);
+            throw error;
+        }
+
+        return (user.Password, salt.Salt);
     }
 }

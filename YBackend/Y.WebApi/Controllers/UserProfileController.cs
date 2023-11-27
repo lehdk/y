@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Y.Application.Services.Interfaces;
 using Y.Domain.Models;
 using Y.WebApi.Models.Requests;
@@ -17,7 +18,7 @@ public class UserProfileController : ControllerBase
         _userProfileService = userProfileService;
     }
 
-    [HttpGet("userId:guid")]
+    [HttpGet("{userId:guid}")]
     [ProducesResponseType(typeof(YUser), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     // TODO: Should only return self
@@ -35,5 +36,19 @@ public class UserProfileController : ControllerBase
         var result = await _userProfileService.CreateAsync(data.Username, data.Email, data.Password);
 
         return Ok(result);
+    }
+
+    [HttpPost("{userId:guid}/token")]
+    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> GetToken(Guid userId, [FromBody] string password)
+    {
+        var token = await _userProfileService.GetToken(userId, password);
+
+        if(token is null)
+            return Unauthorized();
+
+        return Ok(token);
     }
 }

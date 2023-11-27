@@ -3,6 +3,7 @@ using Y.Infrastructure;
 using Y.Infrastructure.Extensions;
 using Y.Application.Extensions;
 using Y.WebApi.Middlewares;
+using Y.Application.ConfigurationModels;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,11 @@ builder.Services.AddDbContext<DatabaseContext>(opt =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+var jwtModel = new JwtModel(
+    builder.Configuration.GetSection("Jwt:TokenKey").Value
+);
+builder.Services.AddSingleton<JwtModel>(jwtModel);
 
 builder.Services.AddYInfrastructure();
 builder.Services.AddYApplication();

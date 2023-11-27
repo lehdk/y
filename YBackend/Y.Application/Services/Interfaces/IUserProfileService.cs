@@ -6,4 +6,5 @@ public interface IUserProfileService
 {
     Task<YUser?> GetUser(Guid userId);
     Task<YUser> CreateAsync(string username, string email, string password);
+    Task<string?> GetToken(Guid userGuid, string password);
 }

@@ -1,6 +1,6 @@
-using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 using Moq;
+using Y.Application.ConfigurationModels;
 using Y.Application.Services;
 using Y.Application.Services.Interfaces;
 using Y.Domain.Exceptions;
@@ -19,7 +19,12 @@ public class UserProfileServiceTests
     private readonly Mock<IUserProfileRepository> _userProfileRepositoryMock = new();
     private readonly Mock<IArgon2idPasswordHashAlgorithm> _passwordHasherMock = new();
 
-    private IUserProfileService GetService() => new UserProfileService(_loggerMock.Object, _userProfileRepositoryMock.Object, _passwordHasherMock.Object);
+    private IUserProfileService GetService() => new UserProfileService(
+        _loggerMock.Object,
+        _userProfileRepositoryMock.Object,
+        _passwordHasherMock.Object,
+        new JwtModel("sjtydgfxfgfvresd")
+    );
 
     [Theory]
     [InlineData("u")]

@@ -16,9 +16,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Y.Application.UnitTests", "Y.Application.UnitTests\Y.Application.UnitTests.csproj", "{2E12780B-0F5E-4729-BB6F-E9C90D446EB0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{BAFFAA44-BAAB-4ED5-8A43-0671F43541DA}"
-	ProjectSection(SolutionItems) = preProject
-		READEME.md = READEME.md
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

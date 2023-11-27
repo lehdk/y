@@ -23,7 +23,7 @@ public class UserProfileServiceTests
         _loggerMock.Object,
         _userProfileRepositoryMock.Object,
         _passwordHasherMock.Object,
-        new JwtModel("sjtydgfxfgfvresd")
+        new JwtModel("tokenKey", "issuer", "audience")
     );
 
     [Theory]

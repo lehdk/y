@@ -103,11 +103,13 @@ public class UserProfileService : IUserProfileService
                 new Claim(ClaimTypes.Email, user.Email),
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtModel.TokenKey));
+            var key = new SymmetricSecurityKey(_jwtModel.TokenBytes);
 
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
             var token = new JwtSecurityToken(
+                issuer: _jwtModel.Issuer,
+                audience: _jwtModel.Audience,
                 claims: claims,
                 expires: DateTime.UtcNow.AddMinutes(30),
                 signingCredentials: credentials
@@ -122,5 +124,19 @@ public class UserProfileService : IUserProfileService
             _logger.LogError(e, "Error generating token");
             throw;
         }
+    }
+
+    private TokenValidationParameters GetValidationParameters()
+    {
+        return new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = _jwtModel.Issuer,
+            ValidAudience = _jwtModel.Audience,
+            IssuerSigningKey = new SymmetricSecurityKey(_jwtModel.TokenBytes)
+        };
     }
 }

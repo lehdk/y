@@ -1,0 +1,29 @@
+.square {
+    background-color: #252525;
+
+    border-radius: 2%;
+
+    padding: 1vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wrapper {
+    margin-top: 10%;
+
+    display: grid;
+
+    height: 100%;
+    width: 100%;
+    align-items: center;
+    justify-items: center;
+}
+
+ion-row {
+    margin-top: 5px;
+}
+
+input {
+    margin-bottom: 8px;
+}

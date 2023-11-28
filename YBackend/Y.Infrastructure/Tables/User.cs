@@ -25,4 +25,12 @@ public class User
     public Guid ProfileId { get; set; }
     
     public PasswordSalts PasswordSalt { get; set; }
+    
+    public ICollection<Posts> Posts { get; set; }
+    
+    public ICollection<PostReactions> Reactions { get; set; }
+    
+    public ICollection<PostComments> Comments { get; set; }
+    
+    public ICollection<Follows> Followers { get; set; }
 }

@@ -22,6 +22,22 @@ namespace Y.WebApi.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Y.Infrastructure.Tables.Follows", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("Follow")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("Follows");
+                });
+
             modelBuilder.Entity("Y.Infrastructure.Tables.PasswordSalts", b =>
                 {
                     b.Property<Guid>("UserId")
@@ -34,6 +50,79 @@ namespace Y.WebApi.Migrations
                     b.HasKey("UserId");
 
                     b.ToTable("PasswordSalts");
+                });
+
+            modelBuilder.Entity("Y.Infrastructure.Tables.PostComments", b =>
+                {
+                    b.Property<Guid>("CommentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("PostId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("SuperComment")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("CommentId");
+
+                    b.HasIndex("PostId");
+
+                    b.ToTable("PostComments");
+                });
+
+            modelBuilder.Entity("Y.Infrastructure.Tables.PostReactions", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Reactions")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("PostReactions");
+                });
+
+            modelBuilder.Entity("Y.Infrastructure.Tables.Posts", b =>
+                {
+                    b.Property<Guid>("PostId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Headline")
+                        .IsRequired()
+                        .HasMaxLength(75)
+                        .HasColumnType("nvarchar(75)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("PostId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Posts");
                 });
 
             modelBuilder.Entity("Y.Infrastructure.Tables.Profile", b =>
@@ -90,6 +179,17 @@ namespace Y.WebApi.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("Y.Infrastructure.Tables.Follows", b =>
+                {
+                    b.HasOne("Y.Infrastructure.Tables.User", "User")
+                        .WithMany("Followers")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Y.Infrastructure.Tables.PasswordSalts", b =>
                 {
                     b.HasOne("Y.Infrastructure.Tables.User", "User")
@@ -101,10 +201,51 @@ namespace Y.WebApi.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Y.Infrastructure.Tables.PostComments", b =>
+                {
+                    b.HasOne("Y.Infrastructure.Tables.User", "User")
+                        .WithMany("Comments")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Y.Infrastructure.Tables.PostReactions", b =>
+                {
+                    b.HasOne("Y.Infrastructure.Tables.User", "User")
+                        .WithMany("Reactions")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Y.Infrastructure.Tables.Posts", b =>
+                {
+                    b.HasOne("Y.Infrastructure.Tables.User", "User")
+                        .WithMany("Posts")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Y.Infrastructure.Tables.User", b =>
                 {
+                    b.Navigation("Comments");
+
+                    b.Navigation("Followers");
+
                     b.Navigation("PasswordSalt")
                         .IsRequired();
+
+                    b.Navigation("Posts");
+
+                    b.Navigation("Reactions");
                 });
 #pragma warning restore 612, 618
         }

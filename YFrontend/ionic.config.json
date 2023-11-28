@@ -1,0 +1,7 @@
+{
+  "name": "YFrontend",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

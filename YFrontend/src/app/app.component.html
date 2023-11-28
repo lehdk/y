@@ -1,3 +1,21 @@
 <ion-app>
-  <ion-router-outlet></ion-router-outlet>
+    <ion-header [translucent]="true">
+        <ion-toolbar>
+          <ion-title>
+            Y
+          </ion-title>
+        </ion-toolbar>
+      </ion-header>
+      
+      <ion-content [fullscreen]="true">
+        <ion-header collapse="condense">
+          <ion-toolbar>
+            <ion-title size="large">T</ion-title>
+          </ion-toolbar>
+        </ion-header>
+      
+        <div id="container">
+            <ion-router-outlet></ion-router-outlet>
+        </div>
+      </ion-content>
 </ion-app>

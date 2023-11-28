@@ -17,7 +17,7 @@ export class LoginPageComponent implements OnInit {
 
     ngOnInit() { }
 
-    login() {
-        console.log("hey hey");
+    login(): void {
+        // TODO: Login here
     }
 }

@@ -1,0 +1,57 @@
+
+<div class="wrapper">
+    <ion-grid class="square">
+      <form [formGroup]="registerForm" (ngSubmit)="register()">
+        <ion-grid>
+  
+          <ion-row>
+            <label for="username">Username</label>
+          </ion-row>
+  
+          <ion-row>
+            <input type="text" id="username" formControlName="username">
+          </ion-row>
+
+          <ion-row>
+            <label for="username">Email</label>
+          </ion-row>
+  
+          <ion-row>
+            <input type="text" id="email" formControlName="email">
+          </ion-row>
+            
+          <ion-row>
+            <label for="password">Password</label>
+          </ion-row>
+  
+          <ion-row>
+            <input type="password" id="password" formControlName="password">
+          </ion-row>
+
+          <ion-row>
+            <label for="password">Repeat Password</label>
+          </ion-row>
+  
+          <ion-row>
+            <input type="password" id="repeatpassword" formControlName="repeatPassword">
+          </ion-row>
+  
+          <ion-row>
+            <ion-col>
+            </ion-col>
+              
+            <ion-col>
+              <ion-button type="submit" color="success" [disabled]="registerForm.invalid">
+                Login
+              </ion-button>
+            </ion-col>
+  
+            <ion-col>
+            </ion-col>
+          </ion-row>
+  
+        </ion-grid>
+      </form>
+    </ion-grid>
+  </div>
+  

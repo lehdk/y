@@ -4,6 +4,7 @@ import { IonicModule } from '@ionic/angular';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LoginPageRoutingModule } from './login-routing.module';
 import { LoginPageComponent } from './login.page/login.page.component';
+import { RegisterComponent } from './register/register.component';
 
 
 
@@ -15,6 +16,6 @@ import { LoginPageComponent } from './login.page/login.page.component';
         IonicModule,
         LoginPageRoutingModule
     ],
-    declarations: [LoginPageComponent]
+    declarations: [LoginPageComponent, RegisterComponent]
 })
 export class LoginModule { }

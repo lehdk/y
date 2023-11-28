@@ -1,0 +1,38 @@
+name: DotnetTests
+
+on:
+    push:
+        branches:
+            - main
+            - feature/*
+    pull_request:
+        branches:
+            - main
+            - feature/*
+
+    workflow_dispatch:
+
+jobs:
+    tests:
+        name: Tests
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v3
+      
+            - name: Set up .NET Core
+              uses: actions/setup-dotnet@v1
+              with:
+                 dotnet-version: 8.0.x
+
+            - name: Build Backend
+              run: dotnet build YBackend/Y.WebApi/Y.WebApi.csproj
+            
+            - name: Run Backend
+              run: dotnet run --project YBackend/Y.WebApi/Y.WebApi.csproj &
+            
+            - name: Sleep and kill
+              run: sleep 15 && pkill -f "dotnet Y.WebApi.dll" ||true
+      
+            - name: Run tests
+              run: dotnet test YBackend/Y.Application.UnitTests/Y.Application.UnitTests.csproj

@@ -25,3 +25,8 @@ ion-row {
 input {
     margin-bottom: 8px;
 }
+
+.link:hover {
+    cursor: pointer;   
+    text-decoration: underline;   
+}

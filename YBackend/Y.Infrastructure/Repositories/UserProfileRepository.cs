@@ -4,6 +4,7 @@ using Y.Infrastructure.Extensions;
 using Y.Infrastructure.Repositories.Interfaces;
 using Y.Infrastructure.Tables;
 using Y.Domain.Exceptions;
+using Microsoft.EntityFrameworkCore;
 
 namespace Y.Infrastructure.Repositories;
 
@@ -25,11 +26,30 @@ public class UserProfileRepository : IUserProfileRepository
         if (user is null)
             return null;
 
+        var result = await PopulateUserWithProfile(user);
+
+        return result;
+    }
+
+    public async Task<YUser?> GetUserByUsername(string username)
+    {
+        var user = await _context.Users.Where(u => u.Username == username).FirstOrDefaultAsync();
+
+        if (user is null)
+            return null;
+
+        var result = await PopulateUserWithProfile(user);
+
+        return result;
+    }
+
+    private async Task<YUser?> PopulateUserWithProfile(User user)
+    {
         var dbProfile = await _context.Profiles.FindAsync(user.ProfileId);
 
-        if(dbProfile is null)
+        if (dbProfile is null)
         {
-            _logger.LogError("Could not find profile for user {userId}", userId);
+            _logger.LogError("Could not find profile for user {userId}", user.Guid);
             return null;
         }
 

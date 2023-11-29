@@ -69,17 +69,17 @@ public class UserProfileService : IUserProfileService
         return await _userProfileRepository.CreateUser(username, email, hash, salt);
     }
 
-    public async Task<string?> GetToken(Guid userGuid, string password)
+    public async Task<string?> GetToken(string username, string password)
     {
-        if (userGuid == Guid.Empty)
-            throw new ArgumentException("Incorrect user guid");
+        if (string.IsNullOrWhiteSpace(username))
+            throw new ArgumentException("Incorrect username");
 
-        var user = await _userProfileRepository.GetUser(userGuid);
+        var user = await _userProfileRepository.GetUserByUsername(username);
 
         if (user is null)
             throw new ArgumentException("Incorrect user guid");
 
-        var hashAndSalt = await _userProfileRepository.GetHashAndSalt(userGuid);
+        var hashAndSalt = await _userProfileRepository.GetHashAndSalt(user.Guid);
 
         var isCorrectPassword = _hashing.VerifyHashedPassword(password, hashAndSalt.Hash, hashAndSalt.Salt);
 

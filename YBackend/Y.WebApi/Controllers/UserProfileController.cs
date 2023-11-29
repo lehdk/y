@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Y.Application.Services.Interfaces;
 using Y.Domain.Models;
 using Y.WebApi.Models.Requests;
+using Y.WebApi.Models.Responses;
 
 namespace Y.WebApi.Controllers;
 
@@ -38,17 +39,20 @@ public class UserProfileController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost("{userId:guid}/token")]
-    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+    [HttpPost("token")]
+    [ProducesResponseType(typeof(GetTokenResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> GetToken(Guid userId, [FromBody] string password)
+    public async Task<IActionResult> GetToken([FromBody] GetTokenRequest request)
     {
-        var token = await _userProfileService.GetToken(userId, password);
+        var token = await _userProfileService.GetToken(request.Username, request.Password);
 
         if(token is null)
             return Unauthorized();
 
-        return Ok(token);
+        var response = new GetTokenResponse(token);
+
+        return Ok(response);
     }
 }
+z

@@ -5,6 +5,6 @@ export interface YUser {
     username: string;
     email: string;
     createdAt: Date;
-    LastLogin: Date | null;
-    Profile: YProfile;
+    lastLogin: Date | null;
+    profile: YProfile;
 }

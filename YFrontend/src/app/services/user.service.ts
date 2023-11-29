@@ -29,6 +29,10 @@ export class UserService {
         return response;
     }
 
+    getUser(username: string) {
+        return this.http.get<YUser>(`${this.url}/${username}`);
+    }
+
     login(username: string, password: string) {
 
         const body = {
@@ -45,7 +49,7 @@ export class UserService {
 
             localStorage.setItem(this.LOCAL_STORATE_KEY, tokenResponse.token);
 
-            this.router.navigate(['home']);
+            this.router.navigate(['']);
         });
     }
 }

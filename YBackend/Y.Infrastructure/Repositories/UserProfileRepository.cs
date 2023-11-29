@@ -43,6 +43,21 @@ public class UserProfileRepository : IUserProfileRepository
         return result;
     }
 
+    public async Task UpdateLastLogin(Guid userGuid, DateTime time)
+    {
+        var user = await _context.Users.FindAsync(userGuid);
+
+        if(user is null)
+        {
+            _logger.LogError("Could not update last login on user {userGuid}", userGuid);
+            return;
+        }
+
+        user.LastLogin = time;
+
+        await _context.SaveChangesAsync();
+    }
+
     private async Task<YUser?> PopulateUserWithProfile(User user)
     {
         var dbProfile = await _context.Profiles.FindAsync(user.ProfileId);

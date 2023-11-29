@@ -19,13 +19,13 @@ public class UserProfileController : ControllerBase
         _userProfileService = userProfileService;
     }
 
-    [HttpGet("{userId:guid}")]
+    [HttpGet("{username}")]
     [ProducesResponseType(typeof(YUser), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     // TODO: Should only return self
-    public async Task<IActionResult> GetUser(Guid userId)
+    public async Task<IActionResult> GetUser(string username)
     {
-        var result = await _userProfileService.GetUser(userId);
+        var result = await _userProfileService.GetUser(username);
 
         return Ok(result);
     }
@@ -55,4 +55,3 @@ public class UserProfileController : ControllerBase
         return Ok(response);
     }
 }
-z

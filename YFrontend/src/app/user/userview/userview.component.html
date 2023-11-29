@@ -1,0 +1,71 @@
+<div class="wrapper">
+    <div *ngIf="currentUser else loading">
+        <h1>{{currentUser.username}}</h1>
+
+        <ion-grid>
+
+            <ion-row>
+                <ion-col>
+                    guid
+                </ion-col>
+                <ion-col>
+                    {{currentUser.guid}}
+                </ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col>
+                    username
+                </ion-col>
+                <ion-col>
+                    {{currentUser.username}}
+                </ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col>
+                    email
+                </ion-col>        
+                <ion-col>
+                    {{currentUser.email}}
+                </ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col>
+                    createdAt
+                </ion-col>
+                <ion-col>
+                    {{currentUser.createdAt}}
+                </ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col>
+                    LastLogin
+                </ion-col>
+                <ion-col>
+                    {{currentUser.lastLogin}}
+                </ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col>
+                    Quote
+                </ion-col>
+                <ion-col>
+                    <i>{{currentUser.profile.quote}}</i>
+                </ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col>
+                    Description
+                </ion-col>
+                <ion-col>
+                    {{currentUser.profile.description}}
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+    </div>
+    
+    <ng-template #loading>
+        <div id="loader">
+            <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+        </div>
+    </ng-template>
+</div>

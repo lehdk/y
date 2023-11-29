@@ -1,6 +1,5 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
@@ -34,9 +33,16 @@ public class UserProfileService : IUserProfileService
 
     public Task<YUser?> GetUser(Guid userId)
     {
-        _logger.LogInformation($"Getting user {userId}");
+        _logger.LogInformation("Getting user {userId}", userId);
 
         return _userProfileRepository.GetUser(userId);
+    }
+
+    public Task<YUser?> GetUser(string username)
+    {
+        _logger.LogInformation("Getting user {username}", username);
+
+        return _userProfileRepository.GetUserByUsername(username);    
     }
 
     public async Task<YUser> CreateAsync(string username, string email, string password)
@@ -87,6 +93,12 @@ public class UserProfileService : IUserProfileService
         {
             return null;
         }
+
+        var lastLogin = DateTime.UtcNow;
+
+        await _userProfileRepository.UpdateLastLogin(user.Guid, lastLogin);
+
+        user.LastLogin = lastLogin;
 
         var jwt = GenerateToken(user);
 

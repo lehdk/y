@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { take } from 'rxjs';
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
     selector: 'app-register',
@@ -34,11 +37,23 @@ export class RegisterComponent implements OnInit {
         };
     }
 
-    constructor() { }
+    constructor(private userService: UserService, private router: Router) { }
 
     ngOnInit() { }
 
     register(): void {
-        // TODO: Register here
+        const username = this.registerForm.controls.username.value;
+        const email = this.registerForm.controls.email.value;
+        const password = this.registerForm.controls.password.value;
+
+        if(!username || !email || !password) {
+            return;
+        }
+        
+        let response = this.userService.createUser(username, email, password);
+
+        response.pipe(take(1)).subscribe(data => {
+            this.router.navigate(['login']);
+        });
     }
 }

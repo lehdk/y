@@ -5,6 +5,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LoginPageRoutingModule } from './login-routing.module';
 import { LoginPageComponent } from './login.page/login.page.component';
 import { RegisterComponent } from './register/register.component';
+import { HttpClientModule } from '@angular/common/http';
 
 
 
@@ -14,7 +15,8 @@ import { RegisterComponent } from './register/register.component';
         FormsModule,
         ReactiveFormsModule,
         IonicModule,
-        LoginPageRoutingModule
+        LoginPageRoutingModule,
+        HttpClientModule
     ],
     declarations: [LoginPageComponent, RegisterComponent]
 })

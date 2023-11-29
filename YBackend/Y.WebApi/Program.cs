@@ -66,6 +66,8 @@ builder.Services.AddSingleton<JwtModel>(jwtModel);
 builder.Services.AddYInfrastructure();
 builder.Services.AddYApplication();
 
+builder.Services.AddCors();
+
 builder.Services.AddAuthentication("Bearer").AddJwtBearer(opt =>
 {
     opt.TokenValidationParameters = new TokenValidationParameters()
@@ -88,6 +90,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors(x =>
+{
+    x.AllowAnyHeader();
+    x.AllowAnyMethod();
+    x.SetIsOriginAllowed(origin => true);
+    x.AllowCredentials();
+});
 
 app.UseMiddleware<ExceptionMiddleware>();
 

@@ -12,6 +12,8 @@ public static class Extensions
         
         services.AddTransient<IUserProfileService, UserProfileService>();
 
+        services.AddTransient<IPostsService, PostsService>();
+
         return services;
     }
 }

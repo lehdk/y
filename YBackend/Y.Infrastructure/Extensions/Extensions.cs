@@ -11,6 +11,7 @@ public static class Extensions
     public static IServiceCollection AddYInfrastructure(this IServiceCollection services)
     {
         services.AddTransient<IUserProfileRepository, UserProfileRepository>();
+        services.AddTransient<IPostRepository, PostRepository>();
 
         return services;
     }
@@ -40,5 +41,17 @@ public static class Extensions
     public static YUser Parse(this User user, Profile profile)
     {
         return user.Parse(profile.Parse());
+    }
+
+    public static YPost Parse(this Posts post)
+    {
+        return new YPost
+        {
+            Id = post.PostId,
+            UserId = post.UserId,
+            Headline = post.Headline,
+            Content = post.Content,
+            CreatedAt = post.CreatedAt,
+        };
     }
 }

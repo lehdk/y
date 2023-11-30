@@ -56,6 +56,8 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+builder.Services.Configure<RouteOptions>(opt => opt.LowercaseUrls = true);
+
 var jwtModel = new JwtModel(
     issuer: builder.Configuration.GetSection("Jwt:Issuer").Value,
     audience: builder.Configuration.GetSection("Jwt:Audience").Value,

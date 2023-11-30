@@ -21,6 +21,15 @@ public class PostsController : ControllerBase
         _postService = postsService;
     }
 
+    [HttpGet]
+    [ProducesResponseType(typeof(List<YPost>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetPosts(Guid? userId = null, int page = 1, int pageSize = 10)
+    {
+        var result = await _postService.GetPostsAsync(userId, page, pageSize);
+
+        return Ok(result);
+    }
+
     [HttpPost]
     [ProducesResponseType(typeof(YPost), StatusCodes.Status200OK)]
     public async Task<IActionResult> CreatePost([FromBody] CreatePostRequest data)

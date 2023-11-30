@@ -16,6 +16,13 @@ public class PostsService : IPostsService
         _postRepository = postRepository;
     }
 
+    public async Task<List<YPost>> GetPostsAsync(Guid? userId, int page, int pageSize)
+    {
+        var posts = await _postRepository.GetPosts(userId, page, pageSize).ToListAsync();
+
+        return posts;
+    }
+
     public Task<YPost> CreatePostAsync(string headline, string content, Guid userId)
     {
         _logger.LogInformation("Creating a post for user {userId}", userId);

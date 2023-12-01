@@ -32,6 +32,10 @@ export class UserService {
     getUser(username: string) {
         return this.http.get<YUser>(`${this.url}/${username}`);
     }
+    
+    getUserById(userId: string) {
+        return this.http.get<YUser>(`${this.url}/id/${userId}`);
+    }
 
     login(username: string, password: string) {
 

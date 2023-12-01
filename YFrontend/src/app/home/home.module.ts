@@ -6,6 +6,7 @@ import { HomePage } from './home.page';
 
 import { HomePageRoutingModule } from './home-routing.module';
 import { PostviewComponent } from './postview/postview.component';
+import { PostCardComponent } from '../post-card/post-card.component';
 
 
 @NgModule({
@@ -15,6 +16,6 @@ import { PostviewComponent } from './postview/postview.component';
     IonicModule,
     HomePageRoutingModule
   ],
-  declarations: [HomePage, PostviewComponent]
+  declarations: [HomePage, PostviewComponent, PostCardComponent]
 })
 export class HomePageModule {}

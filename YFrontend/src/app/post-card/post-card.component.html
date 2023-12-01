@@ -1,3 +1,32 @@
-<p>
-  post-card works!
-</p>
+<div class="postcard">
+    <ion-grid>
+        <ion-row>
+            <ion-col>
+                <span>
+                    Created by: 
+                    <span  *ngIf="createdBy; else loadingUser">{{createdBy?.username}}</span>
+                    <ng-template #loadingUser>
+                        Created by: <div class="loading-spinner"></div>
+                    </ng-template>
+                    At: <span>{{post.createdAt}}</span>
+                </span>
+            </ion-col>
+        </ion-row>
+        
+        <ion-row>
+            <ion-col>
+                <h2>
+                    {{post.headline}}
+                </h2>
+            </ion-col>
+        </ion-row>
+
+        <ion-row>
+            <ion-col>
+                <p>
+                    {{post.content}}
+                </p>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+</div>

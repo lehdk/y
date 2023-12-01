@@ -11,14 +11,16 @@
         
     </ion-row>
 
-    <ion-row *ngFor="let post of posts">
+    <ion-row>
         <ion-col></ion-col>
-        <ion-col>
-            <p>{{post.headline}}</p>
+        <ion-col>    
+            <div *ngFor="let post of posts">
+                <app-post-card [post]="post"></app-post-card>
+            </div>
         </ion-col>
         <ion-col></ion-col>
     </ion-row>
-    
+
     <ion-row>
         <ion-col></ion-col>
         <ion-col>

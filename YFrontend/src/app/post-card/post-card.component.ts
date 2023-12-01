@@ -14,6 +14,7 @@ export class PostCardComponent implements OnInit {
     @Input({ required: true }) post!: YPost;
 
     createdBy: YUser | null = null;
+    loggedInUser = this.userService.getLoggedInUser();
 
     constructor(private userService: UserService) { }
 

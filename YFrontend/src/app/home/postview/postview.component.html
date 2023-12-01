@@ -13,11 +13,13 @@
 
     <ion-row>
         <ion-col></ion-col>
+        
         <ion-col>    
             <div *ngFor="let post of posts">
                 <app-post-card [post]="post"></app-post-card>
             </div>
         </ion-col>
+
         <ion-col></ion-col>
     </ion-row>
 

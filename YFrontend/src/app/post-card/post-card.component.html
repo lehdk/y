@@ -4,7 +4,7 @@
             <ion-col>
                 <span>
                     Created by: 
-                    <span  *ngIf="createdBy; else loadingUser">{{createdBy?.username}}</span>
+                    <span *ngIf="createdBy; else loadingUser">{{createdBy.username}}</span>
                     <ng-template #loadingUser>
                         Created by: <div class="loading-spinner"></div>
                     </ng-template>

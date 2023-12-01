@@ -18,6 +18,13 @@ public class PostRepository : IPostRepository
         _context = context;
     }
 
+    public async Task<YPost?> GetPostAsync(Guid postId)
+    {
+        var post = await _context.Posts.FindAsync(postId);
+    
+        return post?.Parse() ?? null;
+    }
+
     public async IAsyncEnumerable<YPost> GetPosts(Guid? userId, int page, int pageSize)
     {
         var query = _context.Posts.AsQueryable();
@@ -48,6 +55,31 @@ public class PostRepository : IPostRepository
         await _context.SaveChangesAsync();
 
         var parsed = post.Entity.Parse();
+
+        return parsed;
+    }
+
+    public async Task<YPostComment?> GetCommentAsync(Guid commentId)
+    {
+        var comment = await _context.PostComments.FindAsync(commentId);
+
+        return comment?.Parse() ?? null;
+    }
+
+    public async Task<YPostComment> CreateCommentAsync(Guid userId, Guid postId, string text, Guid? superComment)
+    {
+        var comment = await _context.PostComments.AddAsync(new PostComments
+        {
+            UserId = userId,
+            PostId = postId,
+            SuperCommentId = null,
+            Text = text,
+            CreatedAt = DateTime.UtcNow
+        });
+
+        await _context.SaveChangesAsync();
+
+        var parsed = comment.Entity.Parse();
 
         return parsed;
     }

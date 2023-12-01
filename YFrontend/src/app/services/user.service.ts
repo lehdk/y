@@ -52,4 +52,30 @@ export class UserService {
             this.router.navigate(['']);
         });
     }
+
+    getToken(): string {
+        const token: string | null = localStorage.getItem(this.LOCAL_STORATE_KEY);
+
+        
+        if(!token) {
+            this.router.navigate(['login']);
+            return "";
+        }
+        
+        const isTokenExpired = this.isTokenExpired(token);
+
+        if(isTokenExpired) {
+            this.router.navigate(['login']);
+            return "";
+        }
+
+        return token;
+    }
+
+    private isTokenExpired(token: string): boolean {
+        const expirationTime = (JSON.parse(atob(token.split('.')[1]))).exp * 1000;
+        const currentTime = new Date().getTime();
+
+        return expirationTime <= currentTime;
+    }
 }

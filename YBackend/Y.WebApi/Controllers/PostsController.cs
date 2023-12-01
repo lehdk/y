@@ -53,6 +53,57 @@ public class PostsController : ControllerBase
         return Ok(post);
     }
 
+    [HttpPost("{postId:guid}/comment")]
+    [ProducesResponseType(typeof(YPostComment), StatusCodes.Status200OK)]
+    public async Task<IActionResult> CreateCommentOnPost([FromBody] CreateCommentOnPostRequest data, Guid postId)
+    {
+        if (data.Text.Length < 1 || data.Text.Length > 250)
+            ModelState.AddModelError(nameof(data.Text), "The text must be in the range of [1, 250]");
+
+        if (postId == Guid.Empty)
+            ModelState.AddModelError(nameof(postId), "The post id must be set");
+                
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var user = await GetUser(HttpContext);
+
+        var result = await _postService.CreateCommentAsync(user.Guid, postId, data.Text, null);
+
+        if (result is null)
+            throw new Exception("Could not add the comment");
+
+        return Ok(result);
+    }
+
+    [HttpPost("{postId:guid}/comment/{superCommentId:guid}")]
+    [ProducesResponseType(typeof(YPostComment), StatusCodes.Status200OK)]
+    public async Task<IActionResult> CreateCommentOnPostComment([FromBody] CreateCommentOnPostRequest data, Guid postId, Guid superCommentId)
+    {
+        if (data.Text.Length < 1 || data.Text.Length > 250)
+            ModelState.AddModelError(nameof(data.Text), "The text must be in the range of [1, 250]");
+
+        if (postId == Guid.Empty)
+            ModelState.AddModelError(nameof(postId), "The post id must be set");
+
+        if (postId == Guid.Empty)
+            ModelState.AddModelError(nameof(postId), "The super comment id must be set");
+
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var user = await GetUser(HttpContext);
+
+        var result = await _postService.CreateCommentAsync(user.Guid, postId, data.Text, superCommentId);
+
+        if (result is null)
+            throw new Exception("Could not add the comment");
+
+        return Ok(result);
+    }
+
+
+
     private async Task<YUser> GetUser(HttpContext httpContext)
     {
         var username = httpContext.User.FindFirst(ClaimTypes.Name)?.Value;

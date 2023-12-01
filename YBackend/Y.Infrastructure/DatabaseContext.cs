@@ -44,9 +44,10 @@ public class DatabaseContext : DbContext
         modelBuilder.Entity<PostComments>()
             .HasOne(x => x.User)
             .WithMany(x => x.Comments)
-            .HasForeignKey(x => x.UserId)
-            .HasForeignKey(x => x.SuperComment)
-            .HasForeignKey(x => x.PostId);
+            .HasForeignKey(x => x.UserId);
+
+        //.HasForeignKey(x => x.SuperComment)
+        //.HasForeignKey(x => x.PostId);
 
         modelBuilder.Entity<Follows>()
             .HasOne(x => x.User)

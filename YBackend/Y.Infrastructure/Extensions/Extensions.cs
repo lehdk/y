@@ -1,8 +1,10 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.ComponentModel.Design;
+using Microsoft.Extensions.DependencyInjection;
 using Y.Domain.Models;
 using Y.Infrastructure.Repositories;
 using Y.Infrastructure.Repositories.Interfaces;
 using Y.Infrastructure.Tables;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Y.Infrastructure.Extensions;
 
@@ -52,6 +54,19 @@ public static class Extensions
             Headline = post.Headline,
             Content = post.Content,
             CreatedAt = post.CreatedAt,
+        };
+    }
+
+    public static YPostComment Parse(this PostComments comment)
+    {
+        return new YPostComment
+        {
+            CommentId = comment.CommentId,
+            UserId = comment.UserId,
+            PostId = comment.PostId,
+            Text = comment.Text,
+            SuperComment = comment.SuperCommentId,
+            CreatedAt = comment.CreatedAt,
         };
     }
 }

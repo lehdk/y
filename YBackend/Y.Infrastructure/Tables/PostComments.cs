@@ -14,8 +14,9 @@ public class PostComments
 
     [MaxLength(250)]
     public string Text { get; set; } = string.Empty;
-    
-    public Guid? SuperComment { get; set; }
+
+    public PostComments? SuperComment { get; set; }
+    public Guid? SuperCommentId { get; set; }
     
     public Guid UserId { get; set; }
     

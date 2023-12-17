@@ -24,4 +24,8 @@
     <ProjectReference Include="..\Y.Domain\Y.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="sql\" />
+  </ItemGroup>
+
 </Project>

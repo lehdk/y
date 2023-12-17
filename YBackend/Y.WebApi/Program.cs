@@ -6,6 +6,7 @@ using Y.WebApi.Middlewares;
 using Y.Application.ConfigurationModels;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Y.Infrastructure.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,12 +14,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-string? connectionString = builder.Configuration.GetConnectionString("database");
-
-builder.Services.AddDbContext<DatabaseContext>(opt =>
-{
-    opt.UseSqlServer(connectionString, b => b.MigrationsAssembly("Y.WebApi"));
-});
+ConnectionStringModel connectionStringModel = new(builder.Configuration.GetConnectionString("database"));
+builder.Services.AddSingleton<ConnectionStringModel>(connectionStringModel);
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

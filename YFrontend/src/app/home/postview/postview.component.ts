@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { ModalController } from '@ionic/angular';
 import { take } from 'rxjs';
+import { CreatePostComponent } from 'src/app/create-post/create-post.component';
 import { YPost } from 'src/app/models/YPost';
+import { CreatePost } from 'src/app/models/requestModels/CreatePost';
 import { PostService } from 'src/app/services/post.service';
 
 @Component({
@@ -19,9 +22,13 @@ export class PostviewComponent implements OnInit {
 
     posts: YPost[] = [];
 
-    constructor(private postService: PostService) { }
+    constructor(private postService: PostService, private modalController: ModalController) { }
 
-    ngOnInit() { }
+    ngOnInit() {
+        this.postService.posts.subscribe(next => {
+            this.posts = next;
+        });
+    }
 
     selectView(view: string): void {
         if(this.selectedView === view) 
@@ -31,21 +38,22 @@ export class PostviewComponent implements OnInit {
     }
 
     loadMorePosts() {
-        if(this.isLoading)
-            return;
-        
-        this.isLoading = true;
+        this.postService.loadMorePosts();
+    }
 
-        this.postService.loadPosts(this.currentPage, this.pageSize).pipe(take(1)).subscribe({
-            next: posts => {
-                this.posts = this.posts.concat(posts);
-    
-                this.isLoading = false;
-                this.currentPage++;
-            },
-            error: err => {
-                this.isLoading = false;
-            }
+    async createPost() {
+        const modal = await this.modalController.create({
+            component: CreatePostComponent
         });
+
+        modal.onDidDismiss().then(data => {
+            const postData: CreatePost | null = data.data;
+            
+            if(!postData) return;
+
+            this.postService.createPost(postData);
+        });
+
+        await modal.present();
     }
 }

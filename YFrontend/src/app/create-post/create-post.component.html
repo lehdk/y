@@ -1,0 +1,33 @@
+<div>
+
+    <form [formGroup]="createPostForm">
+        <ion-grid>
+            <ion-row>
+                <ion-col>
+                    <input type="text" formControlName="headline">
+                </ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col>
+                    <textarea formControlName="content"></textarea>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+    </form>
+
+    <ion-grid>
+        <ion-row>
+            <ion-col></ion-col>
+
+            <ion-col>
+                <ion-button (click)="post()" color="primary">Post</ion-button>
+            </ion-col>
+            <ion-col>
+                <ion-button (click)="cancel()" color="danger">Cancel</ion-button>
+            </ion-col>
+
+            <ion-col></ion-col>
+        </ion-row>
+    </ion-grid>
+
+</div>

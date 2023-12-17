@@ -116,9 +116,49 @@ WHERE [Guid] = @PostId;";
         return result;
     }
 
-    public IAsyncEnumerable<YPost> GetPosts(Guid? userId, int page, int pageSize)
+    public async IAsyncEnumerable<YPost> GetPosts(Guid? userId, int page, int pageSize)
     {
-        throw new NotImplementedException();
+
+        int rowsToSkip = (page - 1) * pageSize;
+
+        
+        using (var connection = GetSqlConnection)
+        {
+            await connection.OpenAsync();
+
+            string query = @"
+SELECT 
+     [Guid]
+    ,[Headline]
+    ,[Content]
+    ,[CreatedAt]
+    ,[UserId] 
+FROM [Post] ORDER BY [CreatedAt] DESC OFFSET @RowsToSkip ROWS FETCH NEXT @PageSize ROWS ONLY;
+";
+
+            using(var command = new SqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@RowsToSkip", rowsToSkip);
+                command.Parameters.AddWithValue("@PageSize", pageSize);
+
+                using(var reader = command.ExecuteReader())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        yield return new()
+                        {
+                            Id = reader.GetGuid(0),
+                            Headline = reader.GetString(1),
+                            Content = reader.GetString(2),
+                            CreatedAt = reader.GetDateTime(3),
+                            UserId = reader.GetGuid(4),
+                        };
+                    }
+                }
+            }
+
+            await connection.CloseAsync();
+        }
     }
 
     public Task<YPostComment?> GetCommentAsync(Guid commentId)

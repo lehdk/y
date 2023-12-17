@@ -30,6 +30,19 @@ public class PostsController : ControllerBase
         return Ok(result);
     }
 
+    [HttpGet("{postId:guid}")]
+    [ProducesResponseType(typeof(YPost), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetPostById(Guid postId)
+    {
+        var result = await _postService.GetPostAsync(postId);
+
+        if (result is null)
+            return NotFound();
+
+        return Ok(result);
+    }
+
     [HttpPost]
     [ProducesResponseType(typeof(YPost), StatusCodes.Status200OK)]
     public async Task<IActionResult> CreatePost([FromBody] CreatePostRequest data)

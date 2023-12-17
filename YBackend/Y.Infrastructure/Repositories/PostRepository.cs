@@ -1,6 +1,7 @@
-﻿using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore.Diagnostics;
+﻿using System.Runtime.InteropServices;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
+using Y.Domain.Exceptions;
 using Y.Domain.Models;
 using Y.Infrastructure.Models;
 using Y.Infrastructure.Repositories.Interfaces;
@@ -169,5 +170,148 @@ FROM [Post] ORDER BY [CreatedAt] DESC OFFSET @RowsToSkip ROWS FETCH NEXT @PageSi
     public Task<YPostComment> CreateCommentAsync(Guid userId, Guid postId, string text, Guid? superComment)
     {
         throw new NotImplementedException();
+    }
+
+    public async Task<bool> HasUserMadeReaction(Guid postId, Guid userId)
+    {
+        bool exists = false;
+
+        using (var connection = GetSqlConnection)
+        {
+            await connection.OpenAsync();
+
+            string query = @"
+SELECT 1 FROM [PostReaction] WHERE [UserId] = @UserId AND [PostId] = @PostId;
+";
+
+            using(var command = new SqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@UserId", userId);
+                command.Parameters.AddWithValue("@PostId", postId);
+            
+                var reader = await command.ExecuteReaderAsync();
+
+                if(reader.HasRows)
+                {
+                    exists = true;
+                }
+            }
+
+            await connection.CloseAsync();
+        }
+
+        return exists;
+    }
+
+    public async Task CreateReactionAsync(Guid postId, Guid userId, PostReactions reaction)
+    {
+        if (await HasUserMadeReaction(postId, userId))
+        {
+            throw new ValidationException("The user has already made a reaciton to this post");
+        }
+
+        using (var connection = GetSqlConnection)
+        {
+            await connection.OpenAsync();
+
+            string query = @"
+INSERT INTO [PostReaction] ([UserId], [PostId], [Reaction]) VALUES (@UserId, @PostId, @Reaction);
+";
+
+            using (var command = new SqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@UserId", userId);
+                command.Parameters.AddWithValue("@PostId", postId);
+                command.Parameters.AddWithValue("@Reaction", reaction);
+
+                int rowsAffeced = await command.ExecuteNonQueryAsync();
+
+                if (rowsAffeced != 1)
+                {
+                    var exception = new Exception("Error while adding reaction");
+                    _logger.LogError(exception, "Error occurred while user {userId} was creating a reaction on post {postId} with reaction {reaction}", userId, postId, reaction);
+                    throw exception;
+                }
+            }
+
+            await connection.CloseAsync();
+        }
+    }
+
+    public async Task DeleteReactionAsync(Guid postId, Guid userId)
+    {
+        if (!await HasUserMadeReaction(postId, userId))
+        {
+            throw new ValidationException("The user has not made a reaction on this post");
+        }
+
+        using (var connection = GetSqlConnection)
+        {
+            await connection.OpenAsync();
+
+            string query = @"
+DELETE FROM [PostReaction] WHERE [UserId] = @UserId AND [PostId] = @PostId;
+";
+
+            using(var command = new SqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@UserId", userId);
+                command.Parameters.AddWithValue("@PostId", postId);
+
+                int rowsAffeced = await command.ExecuteNonQueryAsync();
+
+                if (rowsAffeced != 1)
+                {
+                    var exception = new Exception("Error while deleting reaction");
+                    _logger.LogError(exception, "Error occurred while user {userId} was deleting a reaction on post {postId}", userId, postId);
+                    throw exception;
+                }
+            }
+
+            await connection.CloseAsync();
+        }
+    }
+
+    public async IAsyncEnumerable<PostReactionPair> GetReactionsForPost(Guid postId)
+    {
+
+        using (var connection = GetSqlConnection)
+        {
+            await connection.OpenAsync();
+            const string query = @"
+SELECT [U].[Username]
+      ,[PR].[Reaction]
+  FROM [PostReaction] AS [PR]
+  JOIN [User] AS [U] ON [PR].[UserId] = [U].[Guid]
+  WHERE [PostId] = @PostId;
+";
+
+            using (var command = new SqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@PostId", postId);
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        PostReactions reaction = (PostReactions)reader.GetInt32(1);
+
+                        if (!Enum.IsDefined(typeof(PostReactions), reaction))
+                        {
+                            _logger.LogError("Error parsing an enum PostReactions while getting post {postId}", postId);
+                            continue;
+                        }
+
+                        yield return new PostReactionPair
+                        {
+                            Username = reader.GetString(0),
+                            Reaction = reaction,
+                        };
+                    }
+                }
+            }
+
+            await connection.CloseAsync();
+        }
     }
 }

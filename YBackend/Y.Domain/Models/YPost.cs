@@ -15,4 +15,12 @@ public class YPost
     public Guid UserId { get; set; }
 
     public DateTime CreatedAt { get; set; }
+
+    public List<PostReactionPair> Reactions { get; set; } = new();
+}
+
+public class PostReactionPair
+{
+    public PostReactions Reaction { get; set; }
+    public string Username { get; set; } = string.Empty;
 }

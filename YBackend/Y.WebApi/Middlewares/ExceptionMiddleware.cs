@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Y.Domain.Exceptions;
 
 namespace Y.WebApi.Middlewares;
 

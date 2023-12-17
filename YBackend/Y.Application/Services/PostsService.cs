@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using Y.Application.Services.Interfaces;
 using Y.Domain.Models;
 using Y.Infrastructure.Repositories.Interfaces;
-using Y.Infrastructure.Tables;
 
 namespace Y.Application.Services;
 
@@ -22,15 +21,28 @@ public class PostsService : IPostsService
     {
         var posts = await _postRepository.GetPosts(userId, page, pageSize).ToListAsync();
 
+        foreach (var p in posts)
+        {
+            var reactions = await _postRepository.GetReactionsForPost(p.Id).ToListAsync();    
+            p.Reactions = reactions;
+        }
+
         return posts;
     }
 
-    public Task<YPost?> GetPostAsync(Guid postId)
+    public async Task<YPost?> GetPostAsync(Guid postId)
     {
         if(postId == Guid.Empty) 
             throw new ArgumentNullException(nameof(postId), "The post id must be defined");
 
-        return _postRepository.GetPostAsync(postId);
+        var post = await _postRepository.GetPostAsync(postId);
+
+        if (post is null)
+            return null;
+
+        post.Reactions = await _postRepository.GetReactionsForPost(postId).ToListAsync();
+
+        return post;
     }
 
     public Task<YPost> CreatePostAsync(string headline, string content, Guid userId)
@@ -86,4 +98,20 @@ public class PostsService : IPostsService
         return await _postRepository.CreateCommentAsync(userId, postId, text, superCommentId);
     }
 
+    public async Task CreateReaction(Guid postId, Guid userId, PostReactions reaction)
+    {
+        if(!Enum.IsDefined(typeof(PostReactions), reaction))
+            throw new ValidationException("Invlid reaction");
+
+        var post = await _postRepository.GetPostAsync(postId);
+        if (post is null)
+            throw new ValidationException("Post not found");
+
+        await _postRepository.CreateReactionAsync(postId, userId, reaction);
+    }
+
+    public async Task DeleteReaction(Guid postId, Guid userId)
+    {
+        await _postRepository.DeleteReactionAsync(postId, userId);
+    }
 }

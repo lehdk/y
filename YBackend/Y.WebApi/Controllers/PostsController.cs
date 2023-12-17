@@ -115,7 +115,29 @@ public class PostsController : ControllerBase
         return Ok(result);
     }
 
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [HttpPost("{postId:guid}/reaction")]
+    public async Task<IActionResult> CreateReaction([FromBody] CreateReactionPostRequest data, Guid postId)
+    {
+        var user = await GetUser(HttpContext);
 
+        ArgumentNullException.ThrowIfNull(data);
+
+        await _postService.CreateReaction(postId, user.Guid, data.PostReaction);
+
+        return NoContent();
+    }
+
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [HttpDelete("{postId:guid}/reaction")]
+    public async Task<IActionResult> DeleteReaction(Guid postId)
+    {
+        var user = await GetUser(HttpContext);
+
+        await _postService.DeleteReaction(postId, user.Guid);
+
+        return NoContent();
+    }
 
     private async Task<YUser> GetUser(HttpContext httpContext)
     {

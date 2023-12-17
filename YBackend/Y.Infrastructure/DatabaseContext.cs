@@ -18,7 +18,7 @@ public class DatabaseContext : DbContext
     
     public DbSet<Posts> Posts { get; set; }
     
-    public DbSet<PostReactions> PostReactions { get; set; }
+    //public DbSet<PostReactions> PostReactions { get; set; }
     
     public DbSet<PostComments> PostComments { get; set; }
     
@@ -36,10 +36,10 @@ public class DatabaseContext : DbContext
             .WithMany(x => x.Posts)
             .HasForeignKey(x => x.UserId);
 
-        modelBuilder.Entity<PostReactions>()
-            .HasOne(x => x.User)
-            .WithMany(x => x.Reactions)
-            .HasForeignKey(x => x.UserId);
+        //modelBuilder.Entity<PostReactions>()
+        //    .HasOne(x => x.User)
+        //    .WithMany(x => x.Reactions)
+        //    .HasForeignKey(x => x.UserId);
 
         modelBuilder.Entity<PostComments>()
             .HasOne(x => x.User)

@@ -4,7 +4,7 @@ namespace Y.Domain.Models;
 
 public class YPostComment
 {
-    public Guid CommentId { get; set; }
+    public Guid Id { get; set; }
 
     public Guid UserId { get; set; }
 

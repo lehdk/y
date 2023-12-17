@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Y.Application.Services.Interfaces;
 using Y.Domain.Models;
 using Y.Infrastructure.Repositories.Interfaces;
+using Y.Infrastructure.Tables;
 
 namespace Y.Application.Services;
 
@@ -23,8 +24,9 @@ public class PostsService : IPostsService
 
         foreach (var p in posts)
         {
-            var reactions = await _postRepository.GetReactionsForPost(p.Id).ToListAsync();    
-            p.Reactions = reactions;
+            p.Reactions = await _postRepository.GetReactionsForPost(p.Id).ToListAsync();
+
+            p.PostComments = await _postRepository.GetCommentsOnPost(p.Id).ToListAsync();
         }
 
         return posts;
@@ -41,6 +43,8 @@ public class PostsService : IPostsService
             return null;
 
         post.Reactions = await _postRepository.GetReactionsForPost(postId).ToListAsync();
+
+        post.PostComments = await _postRepository.GetCommentsOnPost(postId).ToListAsync();
 
         return post;
     }

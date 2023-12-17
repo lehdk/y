@@ -59,7 +59,7 @@ public static class Extensions
     {
         return new YPostComment
         {
-            CommentId = comment.CommentId,
+            Id = comment.CommentId,
             UserId = comment.UserId,
             PostId = comment.PostId,
             Text = comment.Text,

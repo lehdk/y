@@ -162,14 +162,172 @@ FROM [Post] ORDER BY [CreatedAt] DESC OFFSET @RowsToSkip ROWS FETCH NEXT @PageSi
         }
     }
 
-    public Task<YPostComment?> GetCommentAsync(Guid commentId)
+    public async IAsyncEnumerable<YPostComment> GetCommentsOnPost(Guid postId)
     {
-        throw new NotImplementedException();
+        using (var connection = GetSqlConnection)
+        {
+            await connection.OpenAsync();
+
+            string query = @"
+SELECT
+       [Guid]
+      ,[PostId]
+      ,[Text]
+      ,[SuperComment]
+      ,[UserId]
+      ,[CreatedAt]
+FROM 
+    [PostComment] 
+WHERE 
+    [PostId] = @PostId;
+";
+
+            using (var command = new SqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@PostId", postId);
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        Guid? superComment = null;
+
+                        if (!await reader.IsDBNullAsync(3))
+                            superComment = reader.GetGuid(3);
+                        
+                        yield return new()
+                        {
+                            Id = reader.GetGuid(0),
+                            PostId = reader.GetGuid(1),
+                            Text = reader.GetString(2),
+                            SuperComment = superComment,
+                            UserId = reader.GetGuid(4),
+                            CreatedAt = reader.GetDateTime(5)
+                        };
+                    }
+                }
+            }
+
+            await connection.CloseAsync();
+        }
     }
 
-    public Task<YPostComment> CreateCommentAsync(Guid userId, Guid postId, string text, Guid? superComment)
+    public async Task<YPostComment?> GetCommentAsync(Guid commentId)
     {
-        throw new NotImplementedException();
+        YPostComment? result = null;
+
+        using(var connection = GetSqlConnection)
+        {
+            await connection.OpenAsync();
+
+            string query = @"
+SELECT
+       [Guid]
+      ,[PostId]
+      ,[Text]
+      ,[SuperComment]
+      ,[UserId]
+      ,[CreatedAt]
+FROM 
+    [PostComment] 
+WHERE 
+    [Guid] = @Guid;
+";
+
+            using (var command = new SqlCommand(query, connection))
+            {
+
+                command.Parameters.AddWithValue("@Guid", commentId);
+
+                var reader = await command.ExecuteReaderAsync();
+
+                if (reader.HasRows && await reader.ReadAsync())
+                {
+                    Guid? superComment = null;
+
+                    if (!await reader.IsDBNullAsync(3))
+                        superComment = reader.GetGuid(3);
+
+                    result = new()
+                    {
+                        Id = reader.GetGuid(0),
+                        PostId = reader.GetGuid(1),
+                        Text = reader.GetString(2),
+                        SuperComment = superComment,
+                        UserId = reader.GetGuid(4),
+                        CreatedAt = reader.GetDateTime(5)
+                    };
+                }
+            }
+
+            await connection.CloseAsync();
+        }
+
+        return result;
+    }
+
+    public async Task<YPostComment> CreateCommentAsync(Guid userId, Guid postId, string text, Guid? superComment)
+    {
+        Guid? insertedId = null;
+        
+        using (var connection = GetSqlConnection)
+        {
+            await connection.OpenAsync();
+
+            const string queryA = @"
+INSERT INTO [PostComment] 
+    ([Guid], [PostId], [Text], [UserId]) 
+OUTPUT INSERTED.Guid
+VALUES
+    (@Guid, @PostId, @Text, @UserId);
+";
+            const string queryB = @"
+INSERT INTO [PostComment] 
+    ([Guid], [PostId], [Text], [SuperComment], [UserId]) 
+OUTPUT INSERTED.Guid
+VALUES
+    (@Guid, @PostId, @Text, @SuperComment, @UserId);
+";
+
+            string selectedQuery = superComment is null ? queryA : queryB;
+
+            using (var command = new SqlCommand(selectedQuery, connection))
+            {
+                command.Parameters.AddWithValue("@Guid", Guid.NewGuid());
+                command.Parameters.AddWithValue("@PostId", postId);
+                command.Parameters.AddWithValue("@Text", text);
+                command.Parameters.AddWithValue("@UserId", userId);
+                
+                if(superComment is not null)
+                    command.Parameters.AddWithValue("@SuperComment", superComment);
+                
+                var reader = await command.ExecuteReaderAsync();
+
+                if (reader.HasRows && await reader.ReadAsync())
+                {
+                    insertedId = reader.GetGuid(0);
+                }
+            }
+
+            await connection.CloseAsync();
+        }
+
+        if(insertedId is null)
+        {
+            var exception = new Exception("Error trying to create comment");
+            _logger.LogError(exception, "An error occurred while creating comment by user {userId} on post {postId}", userId, postId);
+            throw exception;
+        }
+
+        var result = await GetCommentAsync(insertedId.Value);
+        if(result is null)
+        {
+            var exception = new Exception("Error trying to create comment");
+            _logger.LogError(exception, "An error occurred while creating comment by user {userId} on post {postId}. Could not get created comment", userId, postId);
+            throw exception;
+        }
+
+        return result;
     }
 
     public async Task<bool> HasUserMadeReaction(Guid postId, Guid userId)

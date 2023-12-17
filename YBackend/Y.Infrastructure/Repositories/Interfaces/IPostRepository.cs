@@ -8,6 +8,7 @@ public interface IPostRepository
     public IAsyncEnumerable<YPost> GetPosts(Guid? userId, int page,  int pageSize);
     public Task<YPost> CreatePostAsync(string headline, string content, Guid userId);
     public Task<YPostComment?> GetCommentAsync(Guid commentId);
+    public IAsyncEnumerable<YPostComment> GetCommentsOnPost(Guid postId);
     public Task<YPostComment> CreateCommentAsync(Guid userId, Guid postId, string text, Guid? superComment);
     public Task CreateReactionAsync(Guid postId,  Guid userId, PostReactions reaction);
     public Task DeleteReactionAsync(Guid postId,  Guid userId);

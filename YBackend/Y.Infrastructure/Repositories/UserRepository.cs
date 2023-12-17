@@ -272,7 +272,6 @@ UPDATE [User] SET [LastLogin] = @LastLogin WHERE [Guid] = @UserId
                 command.Parameters.AddWithValue("@LastLogin", lastLogin);
                 command.Parameters.AddWithValue("@UserId", userGuid);
 
-
                 int rowsAffected = await command.ExecuteNonQueryAsync();
 
                 if(rowsAffected < 0)

@@ -17,6 +17,8 @@ public class YPost
     public DateTime CreatedAt { get; set; }
 
     public List<PostReactionPair> Reactions { get; set; } = new();
+
+    public List<YPostComment> PostComments { get; set; } = new();
 }
 
 public class PostReactionPair

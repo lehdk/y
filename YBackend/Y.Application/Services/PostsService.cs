@@ -18,9 +18,9 @@ public class PostsService : IPostsService
         _postRepository = postRepository;
     }
 
-    public async Task<List<YPost>> GetPostsAsync(Guid? userId = null, int page = 1, int pageSize = 10)
+    public async Task<List<YPost>> GetPostsAsync(Guid? userId = null, bool onlyShowFollowers = false, int page = 1, int pageSize = 10)
     {
-        var posts = await _postRepository.GetPosts(userId, page, pageSize).ToListAsync();
+        var posts = await _postRepository.GetPosts(userId, onlyShowFollowers, page, pageSize).ToListAsync();
 
         foreach (var p in posts)
         {

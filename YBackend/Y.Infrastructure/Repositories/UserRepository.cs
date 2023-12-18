@@ -357,4 +357,34 @@ VALUES (@Guid, @Quote, @Description);
             Description = string.Empty
         };
     }
+
+    public async Task<bool> CheckUserExists(Guid userGuid)
+    {
+        bool exists = false;
+
+        using (var connection = GetSqlConnection)
+        {
+            await connection.OpenAsync();
+
+            string query = @"
+SELECT 1 FROM [User] WHERE [Guid] = @UserId;
+";
+
+            using (var command = new SqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@UserId", userGuid);
+
+                var reader = await command.ExecuteReaderAsync();
+
+                if (reader.HasRows)
+                {
+                    exists = true;
+                }
+            }
+
+            await connection.CloseAsync();
+        }
+
+        return exists;
+    }
 }

@@ -5,7 +5,7 @@ namespace Y.Infrastructure.Repositories.Interfaces;
 public interface IPostRepository
 {
     public Task<YPost?> GetPostAsync(Guid postId);
-    public IAsyncEnumerable<YPost> GetPosts(Guid? userId, int page,  int pageSize);
+    public IAsyncEnumerable<YPost> GetPosts(Guid? userId, bool onlyShowFollowers, int page,  int pageSize);
     public Task<YPost> CreatePostAsync(string headline, string content, Guid userId);
     public Task<YPostComment?> GetCommentAsync(Guid commentId);
     public IAsyncEnumerable<YPostComment> GetCommentsOnPost(Guid postId);

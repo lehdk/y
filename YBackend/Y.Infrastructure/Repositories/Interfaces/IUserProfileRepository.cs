@@ -9,4 +9,5 @@ public interface IUserProfileRepository
     Task<YUser> CreateUser(string username, string email, string hash, string salt);
     Task UpdateLastLogin(Guid userGuid, DateTime lastLogin);
     Task<(string Hash, string Salt)> GetHashAndSalt(Guid userGuid);
+    Task<bool> CheckUserExists(Guid userGuid);
 }

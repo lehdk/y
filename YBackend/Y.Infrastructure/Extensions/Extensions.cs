@@ -12,6 +12,7 @@ public static class Extensions
     {
         services.AddTransient<IUserProfileRepository, UserRepository>();
         services.AddTransient<IPostRepository, PostRepository>();
+        services.AddTransient<IFollowRepository, FollowRepository>();
 
         return services;
     }

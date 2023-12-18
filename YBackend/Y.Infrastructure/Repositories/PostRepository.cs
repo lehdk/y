@@ -116,30 +116,35 @@ WHERE [Guid] = @PostId;";
         return result;
     }
 
-    public async IAsyncEnumerable<YPost> GetPosts(Guid? userId, int page, int pageSize)
+    public async IAsyncEnumerable<YPost> GetPosts(Guid? userId, bool onlyShowFollowers, int page, int pageSize)
     {
-
+        // TODO: Make onlyShowFollowers work
         int rowsToSkip = (page - 1) * pageSize;
 
-        
         using (var connection = GetSqlConnection)
         {
             await connection.OpenAsync();
 
-            string query = @"
+            string query = @$"
 SELECT 
      [Guid]
     ,[Headline]
     ,[Content]
     ,[CreatedAt]
     ,[UserId] 
-FROM [Post] ORDER BY [CreatedAt] DESC OFFSET @RowsToSkip ROWS FETCH NEXT @PageSize ROWS ONLY;
-";
+FROM [Post] " +
+
+(userId is not null ? "WHERE [UserId] = @UserId" : "")
+
++ " ORDER BY [CreatedAt] DESC OFFSET @RowsToSkip ROWS FETCH NEXT @PageSize ROWS ONLY;";
 
             using(var command = new SqlCommand(query, connection))
             {
                 command.Parameters.AddWithValue("@RowsToSkip", rowsToSkip);
                 command.Parameters.AddWithValue("@PageSize", pageSize);
+
+                if (userId is not null)
+                    command.Parameters.AddWithValue("@UserId", userId.Value);
 
                 using(var reader = command.ExecuteReader())
                 {

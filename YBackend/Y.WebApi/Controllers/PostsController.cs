@@ -25,7 +25,15 @@ public class PostsController : ControllerBase
     [ProducesResponseType(typeof(List<YPost>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetPosts(Guid? userId = null, bool onlyShowFollowers = false, int page = 1, int pageSize = 10)
     {
-        var result = await _postService.GetPostsAsync(userId, onlyShowFollowers, page, pageSize);
+        Guid? showFollowerId = null;
+
+        if (onlyShowFollowers)
+        {
+            var loggedInUser = await GetUser(HttpContext);
+            showFollowerId = loggedInUser.Guid;
+        }
+
+        var result = await _postService.GetPostsAsync(userId, showFollowerId, page, pageSize);
 
         return Ok(result);
     }

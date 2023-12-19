@@ -4,6 +4,12 @@
     border-radius: 5px;
 }
 
+.link {
+  cursor: pointer;
+  text-decoration: underline;
+  font-weight: bold;
+}
+
 .loading-spinner {  
     display: inline-block;
     /*  control spinner size with setting font-size  */

@@ -7,14 +7,14 @@ import { UserViewRoutingModule } from './user-routing.module';
 import { UserviewComponent } from './userview/userview.component';
 
 @NgModule({
+    declarations: [UserviewComponent],
     imports: [
-      CommonModule,
-      FormsModule,
-      ReactiveFormsModule,
-      IonicModule,
-      HttpClientModule,
-      UserViewRoutingModule
-    ],
-  declarations: [UserviewComponent],
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        IonicModule,
+        HttpClientModule,
+        UserViewRoutingModule,
+    ]
 })
 export class UserModule { }

@@ -12,7 +12,7 @@ export class PostService {
     readonly url: string = "https://localhost:7130/api/posts";
 
     currentPage: number = 1;
-    pageSize: number = 1;
+    pageSize: number = 5;
 
     isLoading: boolean = false;
 
@@ -23,6 +23,10 @@ export class PostService {
     public posts: BehaviorSubject<YPost[]> = new BehaviorSubject<YPost[]>([]);
 
     constructor(private http: HttpClient) { }
+
+    getPostByUser(userId: string, page: number, pageSize: number) {
+        return this.http.get<YPost[]>(`${this.url}?page=${page}&pageSize=${pageSize}&userId=${userId}`);
+    }
 
     loadMorePosts() {
         if(this.isLoading)
@@ -42,6 +46,10 @@ export class PostService {
                 this.isLoading = false;
             }
         });
+    }
+
+    clear() {
+        this.posts.next([]);
     }
 
     loadPosts(page: number, pageSize: number) {

@@ -3,6 +3,7 @@ import { YPost } from '../models/YPost';
 import { YUser } from '../models/YUser';
 import { UserService } from '../services/user.service';
 import { take } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-post-card',
@@ -16,11 +17,15 @@ export class PostCardComponent implements OnInit {
     createdBy: YUser | null = null;
     loggedInUser = this.userService.getLoggedInUser();
 
-    constructor(private userService: UserService) { }
+    constructor(private userService: UserService, private router: Router) { }
 
     ngOnInit() {
         this.userService.getUserById(this.post.userId).pipe(take(1)).subscribe(user => {
             this.createdBy = user;
         });
+    }
+
+    goToUser(username: string) {
+        this.router.navigate(['user', username]);
     }
 }

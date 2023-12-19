@@ -1,9 +1,23 @@
 <ion-app>
     <ion-header [translucent]="true">
         <ion-toolbar>
-          <ion-title>
-            Y
-          </ion-title>
+          <ion-grid>
+            <ion-row>
+              <ion-col>
+                <ion-title id="home" (click)="home()">
+                  Y
+                </ion-title>
+              </ion-col>
+
+              <ion-col></ion-col>
+
+              <ion-col id="user">
+                <ng-container *ngIf="loggedInUser">
+                  <span>Logged in as: <span id="loggedInUser" (click)="goToLoggedIn()">{{loggedInUser.username}}</span></span>
+                </ng-container>
+              </ion-col>
+            </ion-row>
+        </ion-grid>
         </ion-toolbar>
       </ion-header>
       

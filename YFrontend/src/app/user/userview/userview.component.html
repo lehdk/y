@@ -62,6 +62,17 @@
             </ion-row>
         </ion-grid>
     </div>
+
+    <div>
+        <h3>Posts</h3>
+
+        <ion-grid>
+            <ion-row *ngFor="let post of posts">
+                <span>{{post.headline}}</span>
+            </ion-row>
+            <ion-button [disabled]="isLoading" (click)="loadMorePosts()">Load more posts</ion-button>
+        </ion-grid>
+    </div>
     
     <ng-template #loading>
         <div id="loader">

@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { YUser } from '../models/YUser';
-import { BehaviorSubject, take } from 'rxjs';
+import { BehaviorSubject, Observable, take } from 'rxjs';
 import { Router } from '@angular/router';
 import { GetTokenResponse } from '../models/responseModels/GetTokenResponse';
 
@@ -31,7 +31,7 @@ export class UserService {
         return response;
     }
 
-    getLoggedInUser() {
+    getLoggedInUser(): BehaviorSubject<YUser | null> {
         if(!this.loggedInUser.value) {
             const username = this.getCurrentUsername();
              this.getUser(username).pipe(take(1)).subscribe({
@@ -45,7 +45,7 @@ export class UserService {
              });
         }
 
-        return this.loggedInUser.asObservable;
+        return this.loggedInUser;
     }
 
     getUser(username: string) {

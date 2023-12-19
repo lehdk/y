@@ -13,11 +13,6 @@ import { PostService } from 'src/app/services/post.service';
 })
 export class PostviewComponent implements OnInit {
 
-    currentPage: number = 1;
-    pageSize: number = 1;
-
-    isLoading: boolean = false;
-
     selectedView: string = "latest";
 
     posts: YPost[] = [];
@@ -35,6 +30,8 @@ export class PostviewComponent implements OnInit {
             return;
 
         this.selectedView = view;
+
+        this.postService.clear();
     }
 
     loadMorePosts() {

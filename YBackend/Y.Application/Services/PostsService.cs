@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Y.Application.Services.Interfaces;
+using Y.Domain.Exceptions;
 using Y.Domain.Models;
 using Y.Infrastructure.Repositories.Interfaces;
 
@@ -19,6 +19,13 @@ public class PostsService : IPostsService
 
     public async Task<List<YPost>> GetPostsAsync(Guid? userId = null, Guid? showFollowerForUser = null, int page = 1, int pageSize = 10)
     {
+        if(page < 1)
+            throw new ValidationException("The page must be > 1");
+        
+        if(pageSize < 1 || pageSize > 10)
+            throw new ValidationException("The pageSize must be 0 < pageSize < 11");
+
+
         var posts = await _postRepository.GetPosts(userId, showFollowerForUser, page, pageSize).ToListAsync();
 
         foreach (var p in posts)

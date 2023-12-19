@@ -83,7 +83,7 @@ public class UserProfileService : IUserProfileService
         var user = await _userProfileRepository.GetUserByUsername(username);
 
         if (user is null)
-            throw new ArgumentException("Incorrect user guid");
+            return null;
 
         var hashAndSalt = await _userProfileRepository.GetHashAndSalt(user.Guid);
 

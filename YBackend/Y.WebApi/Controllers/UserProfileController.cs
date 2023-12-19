@@ -57,7 +57,7 @@ public class UserProfileController : ControllerBase
         var token = await _userProfileService.GetToken(request.Username, request.Password);
 
         if(token is null)
-            return Unauthorized();
+            return Unauthorized("Incorrect username or password");
 
         var response = new GetTokenResponse(token);
 

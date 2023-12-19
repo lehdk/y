@@ -78,7 +78,7 @@ public class UserProfileService : IUserProfileService
     public async Task<string?> GetToken(string username, string password)
     {
         if (string.IsNullOrWhiteSpace(username))
-            throw new ArgumentException("Incorrect username");
+            return null;
 
         var user = await _userProfileRepository.GetUserByUsername(username);
 

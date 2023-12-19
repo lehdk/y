@@ -72,6 +72,36 @@ VALUES (@Guid, @Username, @Email, @Password, @ProfileId);
         return result;
     }
 
+    public async Task UpdateUserProfile(Guid profileId, string quote, string description)
+    {
+        using (var connection = GetSqlConnection)
+        {
+            await connection.OpenAsync();
+
+            const string query = @"
+UPDATE [Profile] SET [Quote] = @Quote, [Description] = @Description WHERE [Guid] = @ProfileId;
+";
+
+            using (var command = new SqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@Quote", quote);
+                command.Parameters.AddWithValue("@Description", description);
+                command.Parameters.AddWithValue("@ProfileId", profileId);
+
+                int affectedRows = await command.ExecuteNonQueryAsync();
+
+                if(affectedRows != 1)
+                {
+                    var exception = new Exception("An error occurred while updaint profile");
+                    _logger.LogError(exception, "An error occurred while updating profile on user {userId} with quote {quote} and description {description}", profileId, quote, description);
+                    throw exception;
+                }
+            }
+
+            await connection.CloseAsync();
+        }
+    }
+
     public async Task<(string Hash, string Salt)> GetHashAndSalt(Guid userGuid)
     {
         string? hashResult = null;
@@ -151,8 +181,7 @@ WHERE [Guid] = @UserId;
                     if (!await reader.IsDBNullAsync(5))
                         lastLogin = reader.GetDateTime(5);
 
-                    result = new()
-                    {
+                    result = new() {
                         Guid = reader.GetGuid(0),
                         Username = reader.GetString(1),
                         Email = reader.GetString(2),
@@ -192,8 +221,7 @@ WHERE [Guid] = @ProfileId;
 
                 if (reader.HasRows && await reader.ReadAsync())
                 {
-                    result = new()
-                    {
+                    result = new() {
                         Guid = reader.GetGuid(0),
                         Quote = reader.GetString(1),
                         Description = reader.GetString(2),
@@ -238,8 +266,7 @@ WHERE [Username] = @Username;
                     if (!await reader.IsDBNullAsync(5))
                         lastLogin = reader.GetDateTime(5);
 
-                    result = new()
-                    {
+                    result = new() {
                         Guid = reader.GetGuid(0),
                         Username = reader.GetString(1),
                         Email = reader.GetString(2),
@@ -267,14 +294,14 @@ WHERE [Username] = @Username;
 UPDATE [User] SET [LastLogin] = @LastLogin WHERE [Guid] = @UserId
 ";
 
-            using (var command = new SqlCommand(query, connection)) 
+            using (var command = new SqlCommand(query, connection))
             {
                 command.Parameters.AddWithValue("@LastLogin", lastLogin);
                 command.Parameters.AddWithValue("@UserId", userGuid);
 
                 int rowsAffected = await command.ExecuteNonQueryAsync();
 
-                if(rowsAffected < 0)
+                if (rowsAffected < 0)
                 {
                     _logger.LogError("Could not update last login for user {userId} to value {lastLogin}", userGuid, lastLogin);
                 }
@@ -350,8 +377,7 @@ VALUES (@Guid, @Quote, @Description);
         if (insertedId is null)
             throw new Exception("Could not create empty profile");
 
-        return new Profile
-        {
+        return new Profile {
             Guid = insertedId.Value,
             Quote = string.Empty,
             Description = string.Empty

@@ -37,7 +37,7 @@ public class UserProfileServiceTests
 
         // Act Assert
 
-        await Assert.ThrowsAsync<ValidationException>(() => sut.CreateAsync(username, VALID_EMAIL, VALID_PASSWORD));
+        await Assert.ThrowsAsync<ValidationException>(() => sut.CreateUserAsyn(username, VALID_EMAIL, VALID_PASSWORD));
     }
 
     [Theory]
@@ -55,7 +55,7 @@ public class UserProfileServiceTests
 
         // Act Assert
 
-        await Assert.ThrowsAsync<ValidationException>(() => sut.CreateAsync(VALID_USERNAME, email, VALID_PASSWORD));
+        await Assert.ThrowsAsync<ValidationException>(() => sut.CreateUserAsyn(VALID_USERNAME, email, VALID_PASSWORD));
     }
 
     [Fact]
@@ -78,7 +78,7 @@ public class UserProfileServiceTests
 
         // Act
 
-        var result = await sut.CreateAsync(VALID_USERNAME, VALID_EMAIL, VALID_PASSWORD);
+        var result = await sut.CreateUserAsyn(VALID_USERNAME, VALID_EMAIL, VALID_PASSWORD);
 
         // Assert
 

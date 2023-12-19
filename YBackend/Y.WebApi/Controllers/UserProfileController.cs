@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using Y.Application.Services.Interfaces;
 using Y.Domain.Models;
 using Y.WebApi.Models.Requests;
@@ -39,11 +40,25 @@ public class UserProfileController : ControllerBase
         return Ok(result);
     }
 
+    [HttpPut("id/{userId:guid}/profile")]
+    [ProducesResponseType(typeof(YUser), StatusCodes.Status200OK)]
+    public async Task<IActionResult> PutProfile([FromBody] PutProfileRequest data, Guid userId)
+    {
+        var loggedIn = await GetUser(HttpContext);
+
+        if(loggedIn.Guid != userId)
+            return Forbid("You are only allowed to update your own profile");
+
+        var result = await _userProfileService.UpdateProfile(userId, data.Quote, data.Description);
+
+        return Ok(result);
+    }
+
     [HttpPost]
     [ProducesResponseType(typeof(YUser), StatusCodes.Status200OK)]
     public async Task<IActionResult> CreateUser([FromBody] CreateUserRequest data)
     {
-        var result = await _userProfileService.CreateAsync(data.Username, data.Email, data.Password);
+        var result = await _userProfileService.CreateUserAsyn(data.Username, data.Email, data.Password);
 
         return Ok(result);
     }
@@ -62,5 +77,20 @@ public class UserProfileController : ControllerBase
         var response = new GetTokenResponse(token);
 
         return Ok(response);
+    }
+
+    private async Task<YUser> GetUser(HttpContext httpContext)
+    {
+        var username = httpContext.User.FindFirst(ClaimTypes.Name)?.Value;
+
+        if (username is null)
+            throw new UnauthorizedAccessException();
+
+        var user = await _userProfileService.GetUser(username);
+
+        if (user is null)
+            throw new UnauthorizedAccessException();
+
+        return user;
     }
 }

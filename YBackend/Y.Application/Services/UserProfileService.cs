@@ -45,7 +45,7 @@ public class UserProfileService : IUserProfileService
         return _userProfileRepository.GetUserByUsername(username);    
     }
 
-    public async Task<YUser> CreateAsync(string username, string email, string password)
+    public async Task<YUser> CreateUserAsyn(string username, string email, string password)
     {
         _logger.LogInformation($"Creating user with username {username} and email {email}");
         if (username.Length < 3 || username.Length > 100)
@@ -73,6 +73,29 @@ public class UserProfileService : IUserProfileService
         var hash = _hashing.HashPassword(password, salt);
 
         return await _userProfileRepository.CreateUser(username, email, hash, salt);
+    }
+
+    public async Task<YUser> UpdateProfile(Guid userId, string quote, string description)
+    {
+        if (userId == Guid.Empty)
+            throw new ValidationException("Invalid userId");
+
+        if (quote.Length > 75)
+            throw new ValidationException("The quote must have a max length of 75");
+
+        if (description.Length > 500)
+            throw new ValidationException("The quote must have a max length of 500");
+
+        var user = await GetUser(userId);
+
+        if (user is null)
+            throw new ValidationException("The user does not exist");
+
+        await _userProfileRepository.UpdateUserProfile(user.Profile.Guid, quote, description);
+
+        var result = await GetUser(userId);
+
+        return result!;
     }
 
     public async Task<string?> GetToken(string username, string password)

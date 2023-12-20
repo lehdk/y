@@ -4,6 +4,7 @@ import { YUser } from '../models/YUser';
 import { BehaviorSubject, Observable, take } from 'rxjs';
 import { Router } from '@angular/router';
 import { GetTokenResponse } from '../models/responseModels/GetTokenResponse';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
     providedIn: 'root'
@@ -11,8 +12,8 @@ import { GetTokenResponse } from '../models/responseModels/GetTokenResponse';
 export class UserService {
 
     private readonly LOCAL_STORATE_KEY = "TOKEN";
-
-    readonly url: string = "https://localhost:7130/api/UserProfile";
+    
+    readonly url: string = `${environment.url}/api/UserProfile`;
 
     constructor(private http: HttpClient, private router: Router) { }
 

@@ -3,13 +3,14 @@ import { Injectable } from '@angular/core';
 import { YPost } from '../models/YPost';
 import { CreatePost } from '../models/requestModels/CreatePost';
 import { BehaviorSubject, take } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
     providedIn: 'root'
 })
 export class PostService {
     
-    readonly url: string = "https://localhost:7130/api/posts";
+    readonly url: string = `${environment.url}/api/posts`;
 
     currentPage: number = 1;
     pageSize: number = 5;
